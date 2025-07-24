@@ -28,7 +28,7 @@ def parse_lesson_data(data_string):
             'message':"None"
         }
  
-def get_classinfo():
+def get_classinfo(alluser:bool = True) -> object:
     """
     当日の休講情報を{'course':授業名,……}の配列で返す
     """
@@ -91,10 +91,12 @@ def get_classinfo():
         print("k-support ok")
         driver.get("https://gacad.keio.jp/rishu/login-lecinfo");
 
-        radio_button = WebDriverWait(driver, 10).until(
-                EC.element_to_be_clickable((By.CSS_SELECTOR, "#condition_filter"))
-            )
-        radio_button.click()
+        #履修中科目のみのボタンを外す
+        if(not alluser):
+            radio_button = WebDriverWait(driver, 10).until(
+                    EC.element_to_be_clickable((By.CSS_SELECTOR, "#condition_filter"))
+                )
+            radio_button.click()
         today = datetime.date.today()
 
         formatted_date = today.strftime("%Y/%m/%d")
@@ -122,7 +124,6 @@ def get_classinfo():
             search_result_list_div = WebDriverWait(driver, 10).until(
                     EC.visibility_of_element_located((By.CSS_SELECTOR, "#search-result-list"))
                 )
-            print("検索結果リストのdiv要素が表示されました。")
             print(search_result_list_div.text)
 
             parsed_results = []
@@ -137,12 +138,13 @@ def get_classinfo():
             return parsed_results
         except:
             print("休講情報なし")
+            print([])
             return []
 
         # time.sleep(5)
-    except:
-        print('err')
+    except Exception as e:
+        print(f"スクレイピング中に何らかのエラーが発生しました : {e}")
 # おわり #
 
 if __name__ == "__main__":
-    get_classinfo()
+    get_classinfo(False)
