@@ -29,6 +29,9 @@ def parse_lesson_data(data_string):
         }
  
 def get_classinfo():
+    """
+    当日の休講情報を{'course':授業名,……}の配列で返す
+    """
     load_dotenv()
     ID = os.environ.get("KEIO_ID") # keio id
     PW = os.environ.get("KEIO_PW") # keio id pw
@@ -36,8 +39,8 @@ def get_classinfo():
     try:
         # Optional settings of chrome driver
         options = webdriver.ChromeOptions()
-        #options.add_argument('--headless')
-        #options.add_argument('--disable-gpu') #この辺は適宜コメントアウトを切る
+        options.add_argument('--headless')
+        options.add_argument('--disable-gpu') #この辺は適宜コメントアウトを入り切り
 
         # ChromeDriverのパスを指定(通ってれば省略可)
         service = Service()
@@ -56,8 +59,6 @@ def get_classinfo():
         )
         print(f"Redirected to: {driver.current_url}")
 
-        # Find elements and POST (send keys to the input tag)
-        # find_element_by_name は非推奨のため、find_element(By.NAME, ...) に変更
         id_element = WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.CSS_SELECTOR, "input[name='identifier']"))
         )
@@ -96,8 +97,8 @@ def get_classinfo():
         radio_button.click()
         today = datetime.date.today()
 
-        #formatted_date = today.strftime("%Y/%m/%d")
-        formatted_date = "2025/7/15"
+        formatted_date = today.strftime("%Y/%m/%d")
+        #formatted_date = "2025/7/15"
 
         print(f"今日の日付: {formatted_date}")
         #開始日
